@@ -3,6 +3,7 @@ use bevy::{prelude::*};
 fn main() {
     App::new()
     .add_startup_system(setup)
+    .add_system(print_ants)
     .run();
 }
 
@@ -16,6 +17,13 @@ pub fn setup(mut commands: Commands) {
         hunger: 100,
         strength: 100,
     });
+}
+
+pub fn print_ants(ant_query: Query<&Ant>) {
+    for ant in ant_query.iter(){
+        println!("Name: {},",ant.name);
+    }
+    
 }
 
 #[derive(Component)]
