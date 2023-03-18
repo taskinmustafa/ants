@@ -6,6 +6,7 @@ fn main() {
     .add_startup_system(spawn_camera)
     .add_startup_system(spawn_ant)
     .add_system(print_ants)
+    .add_system(ant_movement)
     .run();
 }
 
@@ -75,4 +76,36 @@ pub struct Ant{
     pub role: Role,
     pub hunger: i16,
     pub strength: i16,
+}
+
+pub const ANT_SPEED: f32 = 500.0;
+
+pub fn ant_movement(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut ant_query: Query<&mut Transform, With<Ant>>,
+    time: Res<Time>
+){
+    if let Ok(mut transform) = ant_query.get_single_mut() {
+        let mut direction = Vec3::ZERO;
+
+        if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A){
+            direction += Vec3::new(-1.0, 0.0, 0.0);
+        }
+        if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W){
+            direction += Vec3::new(0.0, 1.0, 0.0);
+        }
+        if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D){
+            direction += Vec3::new(1.0, 0.0, 0.0);
+        }
+        if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S){
+            direction += Vec3::new(0.0, -1.0, 0.0);
+        }
+
+        if direction.length() > 0.0 {
+            direction = direction.normalize();
+        }
+
+        transform.translation += direction * ANT_SPEED * time.delta_seconds();
+
+    }
 }
