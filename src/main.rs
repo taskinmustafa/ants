@@ -1,10 +1,12 @@
 use bevy::{prelude::*, window::PrimaryWindow, render::view::window};
+use rand::prelude::*;
 
 fn main() {
     App::new()
     .add_plugins(DefaultPlugins)
     .add_startup_system(spawn_camera)
     .add_startup_system(spawn_ant)
+    .add_startup_system(spawn_food)
     .add_system(print_ants)
     .add_system(ant_movement)
     .run();
@@ -78,6 +80,9 @@ pub struct Ant{
     pub strength: i16,
 }
 
+#[derive(Component)]
+pub struct Food {}
+
 pub const ANT_SPEED: f32 = 500.0;
 
 pub fn ant_movement(
@@ -107,5 +112,28 @@ pub fn ant_movement(
 
         transform.translation += direction * ANT_SPEED * time.delta_seconds();
 
+    }
+}
+
+pub fn spawn_food(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>
+){
+    let window = window_query.get_single().unwrap();
+    for i in 0..4 {
+        let random_x = random::<f32>() * window.width();
+        let random_y = random::<f32>() * window.height();
+        
+        commands.spawn(
+            (
+                SpriteBundle{
+                    transform: Transform::from_xyz(random_x, random_y, 0.0),
+                    texture: asset_server.load("sprites/bread.png"),
+                    ..default()
+                },
+                Food {}
+            )
+        );
     }
 }
