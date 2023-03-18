@@ -1,9 +1,17 @@
-use bevy::{prelude::*, window::PrimaryWindow, render::view::window};
+use bevy::{prelude::*, window::{PrimaryWindow, PresentMode}, render::view::window};
 use rand::prelude::*;
 
 fn main() {
     App::new()
-    .add_plugins(DefaultPlugins)
+    .add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            title: "Ants".into(),
+            resolution: (1280., 720.).into(),
+            resizable: false,
+            ..default()
+        }),
+        ..default()
+    }))
     .add_startup_system(spawn_camera)
     .add_startup_system(spawn_ant)
     .add_startup_system(spawn_food)
